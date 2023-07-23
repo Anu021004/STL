@@ -1,0 +1,71 @@
+/*create 2 future object fut1 and fut2 using async to find factorial of n, according connect it to a callback function during fut1 and fut2 processing perform matrix multiplication of 2 matrices A and B in main()*/
+#include <iostream>
+#include <future>
+#include <vector>
+
+// Function to calculate the factorial of n
+int factorial(int n) {
+    if (n == 0 || n == 1)
+        return 1;
+    else
+        return n * factorial(n - 1);
+}
+
+// Function to perform matrix multiplication of matrices A and B
+vector<vector<int>> matrixMultiplication(const vector<vector<int>>& A,const vector<vector<int>>& B) {
+    int rowsA = A.size();
+    int colsA = A[0].size();
+    int rowsB = B.size();
+    int colsB = B[0].size();
+
+    // Check if matrix multiplication is possible
+    if (colsA != rowsB) {
+       cerr << "Matrix multiplication not possible. Invalid dimensions." << endl;
+        return {};
+    }
+
+    // Create a result matrix filled with zeros
+    vector<vector<int>> result(rowsA, vector<int>(colsB, 0));
+
+    // Perform matrix multiplication
+    for (int i = 0; i < rowsA; ++i) {
+        for (int j = 0; j < colsB; ++j) {
+            for (int k = 0; k < colsA; ++k) {
+                result[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+
+    return result;
+}
+
+int main() {
+    int n = 4;
+    vector<vector<int>> A = { {8, 2}, {5, 3} };
+    vector<vector<int>> B = { {2, 9}, {4, 6} };
+
+    // Create future objects for factorial calculation and matrix multiplication
+    future<int> fut1 = async(launch::async, factorial, n);
+    future<vector<vector<int>>> fut2 = async(launch::async, matrixMultiplication, A, B);
+
+    // Wait for both tasks to complete
+    fut1.wait();
+    fut2.wait();
+
+    // Get the results using get() method
+    int factorial_result = fut1.get();
+    vector<vector<int>> matrix_result = fut2.get();
+
+    // Display the results
+    cout << "The factorial of " << n << " is: " << factorial_result << endl;
+
+    cout << "Matrix multiplication result:\n";
+    for (const auto& row : matrix_result) {
+        for (const auto& val : row) {
+            cout << val << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}

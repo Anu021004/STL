@@ -1,0 +1,40 @@
+//Create T1 to sort a vector in ascending order and T2 in descending order, print the sorted vector by T1 and T2. Both T1 and T2 are initited by main()
+#include <iostream>
+#include <bits/stdc++.h>
+#include <mutex>
+
+
+using namespace std;
+
+mutex m;
+vector<int> vb{90,39,50,10,48};
+
+ 
+
+void sortA(){
+m.lock();
+sort(vb.begin(),vb.end());
+cout<<"the array in ascending order is\n";
+    for (auto x : vb)
+       cout << x << " \n";
+m.unlock();
+}
+void sortD()
+{
+    m.lock();
+    sort(vb.begin(), vb.end(), greater<int>());
+    cout<<"The array in descending order is\n";
+    for (auto x : vb)
+       cout << ""<<x << " "<<endl;
+    m.unlock();
+}
+int main()
+{
+    thread t1(sortA);
+    thread t2(sortD);
+
+ 
+
+    t1.join();
+    t2.join();
+}
